@@ -31,7 +31,7 @@ class HoldsTest {
 
         library.placeHold("b1", "m2", TODAY.plusDays(1));
 
-        List<Hold> holds = library.holdsOf("m2");
+        List<Hold> holds = library.holdsOf("m2", TODAY.plusDays(1));
         assertEquals(1, holds.size());
         assertEquals("b1", holds.get(0).isbn());
         assertEquals(HoldState.WAITING, holds.get(0).state());
@@ -51,7 +51,7 @@ class HoldsTest {
     @Test
     void cannotHoldBookOnTheShelf() {
         assertThrows(IllegalStateException.class, () -> library.placeHold("b1", "m2", TODAY));
-        assertTrue(library.holdsOf("m2").isEmpty());
+        assertTrue(library.holdsOf("m2", TODAY).isEmpty());
     }
 
     @Test
@@ -60,7 +60,7 @@ class HoldsTest {
         library.placeHold("b1", "m2", TODAY);
 
         assertThrows(IllegalStateException.class, () -> library.placeHold("b1", "m2", TODAY.plusDays(1)));
-        assertEquals(1, library.holdsOf("m2").size());
+        assertEquals(1, library.holdsOf("m2", TODAY.plusDays(1)).size());
     }
 
     @Test
@@ -68,7 +68,7 @@ class HoldsTest {
         library.checkout("b1", "m1", TODAY);
 
         assertThrows(IllegalStateException.class, () -> library.placeHold("b1", "m1", TODAY));
-        assertTrue(library.holdsOf("m1").isEmpty());
+        assertTrue(library.holdsOf("m1", TODAY).isEmpty());
     }
 
     @Test
@@ -79,7 +79,7 @@ class HoldsTest {
 
         library.returnBook("b1", returnDate);
 
-        Hold hold = library.holdsOf("m2").get(0);
+        Hold hold = library.holdsOf("m2", returnDate).get(0);
         assertEquals(HoldState.READY_FOR_PICKUP, hold.state());
         assertEquals(returnDate, hold.readyOn());
     }
@@ -108,7 +108,7 @@ class HoldsTest {
 
         assertEquals("m2", loan.getMemberId());
         assertEquals(TODAY.plusDays(20), loan.getDueDate());
-        assertEquals(HoldState.FULFILLED, library.holdsOf("m2").get(0).state());
+        assertEquals(HoldState.FULFILLED, library.holdsOf("m2", TODAY.plusDays(6)).get(0).state());
     }
 
     @Test
@@ -119,8 +119,8 @@ class HoldsTest {
 
         library.placeHold("b1", "m3", TODAY.plusDays(6));
 
-        assertEquals(HoldState.WAITING, library.holdsOf("m3").get(0).state());
-        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m2").get(0).state());
+        assertEquals(HoldState.WAITING, library.holdsOf("m3", TODAY.plusDays(6)).get(0).state());
+        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m2", TODAY.plusDays(6)).get(0).state());
     }
 
     @Test
@@ -130,7 +130,7 @@ class HoldsTest {
         library.returnBook("b1", TODAY.plusDays(5));
 
         assertThrows(IllegalStateException.class, () -> library.placeHold("b1", "m2", TODAY.plusDays(6)));
-        assertEquals(1, library.holdsOf("m2").size());
+        assertEquals(1, library.holdsOf("m2", TODAY.plusDays(6)).size());
     }
 
     @Test
@@ -141,19 +141,19 @@ class HoldsTest {
         library.placeHold("b1", "m4", TODAY);
 
         library.returnBook("b1", TODAY.plusDays(5));
-        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m2").get(0).state());
-        assertEquals(HoldState.WAITING, library.holdsOf("m3").get(0).state());
-        assertEquals(HoldState.WAITING, library.holdsOf("m4").get(0).state());
+        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m2", TODAY.plusDays(5)).get(0).state());
+        assertEquals(HoldState.WAITING, library.holdsOf("m3", TODAY.plusDays(5)).get(0).state());
+        assertEquals(HoldState.WAITING, library.holdsOf("m4", TODAY.plusDays(5)).get(0).state());
         library.checkout("b1", "m2", TODAY.plusDays(5));
 
         library.returnBook("b1", TODAY.plusDays(8));
-        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m3").get(0).state());
-        assertEquals(HoldState.WAITING, library.holdsOf("m4").get(0).state());
+        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m3", TODAY.plusDays(8)).get(0).state());
+        assertEquals(HoldState.WAITING, library.holdsOf("m4", TODAY.plusDays(8)).get(0).state());
         library.checkout("b1", "m3", TODAY.plusDays(8));
 
         library.returnBook("b1", TODAY.plusDays(11));
-        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m4").get(0).state());
-        assertEquals(TODAY.plusDays(11), library.holdsOf("m4").get(0).readyOn());
+        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m4", TODAY.plusDays(11)).get(0).state());
+        assertEquals(TODAY.plusDays(11), library.holdsOf("m4", TODAY.plusDays(11)).get(0).readyOn());
     }
 
     @Test
@@ -169,7 +169,7 @@ class HoldsTest {
         library.returnBook("b1", TODAY.plusDays(5));
 
         assertThrows(IllegalStateException.class, () -> library.checkout("b1", "m2", TODAY.plusDays(5)));
-        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m2").get(0).state());
+        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m2", TODAY.plusDays(5)).get(0).state());
     }
 
     @Test
@@ -193,7 +193,7 @@ class HoldsTest {
         library.returnBook("b1", TODAY.plusDays(8));
 
         assertDoesNotThrow(() -> library.checkout("b1", "m3", TODAY.plusDays(8)));
-        assertEquals(HoldState.FULFILLED, library.holdsOf("m2").get(0).state());
+        assertEquals(HoldState.FULFILLED, library.holdsOf("m2", TODAY.plusDays(8)).get(0).state());
     }
 
     @Test
@@ -205,7 +205,7 @@ class HoldsTest {
         library.returnBook("b1", returned);
 
         assertDoesNotThrow(() -> library.checkout("b1", "m2", returned.plusDays(3)));
-        assertEquals(HoldState.FULFILLED, library.holdsOf("m2").get(0).state());
+        assertEquals(HoldState.FULFILLED, library.holdsOf("m2", returned.plusDays(3)).get(0).state());
     }
 
     @Test
@@ -219,9 +219,9 @@ class HoldsTest {
         IllegalStateException e = assertThrows(IllegalStateException.class,
                 () -> library.checkout("b1", "m2", returned.plusDays(4)));
         assertTrue(e.getMessage().startsWith("Book is held for another member"), e.getMessage());
-        assertEquals(HoldState.EXPIRED, library.holdsOf("m2").get(0).state());
-        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m3").get(0).state());
-        assertEquals(returned.plusDays(4), library.holdsOf("m3").get(0).readyOn());
+        assertEquals(HoldState.EXPIRED, library.holdsOf("m2", returned.plusDays(4)).get(0).state());
+        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m3", returned.plusDays(4)).get(0).state());
+        assertEquals(returned.plusDays(4), library.holdsOf("m3", returned.plusDays(4)).get(0).readyOn());
     }
 
     @Test
@@ -234,10 +234,10 @@ class HoldsTest {
         library.returnBook("b1", returned);
 
         assertThrows(IllegalStateException.class, () -> library.checkout("b1", "m1", returned.plusDays(6)));
-        assertEquals(returned.plusDays(4), library.holdsOf("m3").get(0).readyOn());
+        assertEquals(returned.plusDays(4), library.holdsOf("m3", returned.plusDays(6)).get(0).readyOn());
 
         assertThrows(IllegalStateException.class, () -> library.checkout("b1", "m3", returned.plusDays(8)));
-        assertEquals(HoldState.EXPIRED, library.holdsOf("m3").get(0).state());
+        assertEquals(HoldState.EXPIRED, library.holdsOf("m3", returned.plusDays(8)).get(0).state());
     }
 
     @Test
@@ -251,10 +251,10 @@ class HoldsTest {
 
         assertThrows(IllegalStateException.class, () -> library.checkout("b1", "m1", returned.plusDays(10)));
 
-        assertEquals(HoldState.EXPIRED, library.holdsOf("m2").get(0).state());
-        assertEquals(HoldState.EXPIRED, library.holdsOf("m3").get(0).state());
-        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m4").get(0).state());
-        assertEquals(returned.plusDays(8), library.holdsOf("m4").get(0).readyOn());
+        assertEquals(HoldState.EXPIRED, library.holdsOf("m2", returned.plusDays(10)).get(0).state());
+        assertEquals(HoldState.EXPIRED, library.holdsOf("m3", returned.plusDays(10)).get(0).state());
+        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m4", returned.plusDays(10)).get(0).state());
+        assertEquals(returned.plusDays(8), library.holdsOf("m4", returned.plusDays(10)).get(0).readyOn());
     }
 
     @Test
@@ -265,7 +265,7 @@ class HoldsTest {
         library.returnBook("b1", returned);
 
         assertDoesNotThrow(() -> library.checkout("b1", "m3", returned.plusDays(4)));
-        assertEquals(HoldState.EXPIRED, library.holdsOf("m2").get(0).state());
+        assertEquals(HoldState.EXPIRED, library.holdsOf("m2", returned.plusDays(4)).get(0).state());
     }
 
     @Test
@@ -276,7 +276,7 @@ class HoldsTest {
         library.returnBook("b1", returned);
 
         assertThrows(IllegalStateException.class, () -> library.placeHold("b1", "m3", returned.plusDays(4)));
-        assertEquals(HoldState.EXPIRED, library.holdsOf("m2").get(0).state());
+        assertEquals(HoldState.EXPIRED, library.holdsOf("m2", returned.plusDays(4)).get(0).state());
     }
 
     @Test
@@ -289,9 +289,9 @@ class HoldsTest {
 
         library.placeHold("b1", "m2", returned.plusDays(4));
 
-        List<Hold> holds = library.holdsOf("m2");
+        List<Hold> holds = library.holdsOf("m2", returned.plusDays(4));
         assertEquals(List.of(HoldState.EXPIRED, HoldState.WAITING), holds.stream().map(Hold::state).toList());
-        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m3").get(0).state());
+        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m3", returned.plusDays(4)).get(0).state());
     }
 
     @Test
@@ -308,9 +308,33 @@ class HoldsTest {
         library.returnBook("b1", returned);
 
         assertThrows(IllegalStateException.class, () -> library.checkout("b1", "m2", returned.plusDays(3)));
-        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m2").get(0).state());
+        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m2", returned.plusDays(3)).get(0).state());
 
         assertThrows(IllegalStateException.class, () -> library.checkout("b1", "m2", returned.plusDays(4)));
-        assertEquals(HoldState.EXPIRED, library.holdsOf("m2").get(0).state());
+        assertEquals(HoldState.EXPIRED, library.holdsOf("m2", returned.plusDays(4)).get(0).state());
+    }
+
+    @Test
+    void holdsQueryReportsExpiredOnceThePickupWindowHasPassedWithNoOtherOperation() {
+        library.checkout("b1", "m1", TODAY);
+        library.placeHold("b1", "m2", TODAY);
+        LocalDate returned = TODAY.plusDays(5);
+        library.returnBook("b1", returned);
+
+        assertEquals(HoldState.READY_FOR_PICKUP, library.holdsOf("m2", returned.plusDays(3)).get(0).state());
+        assertEquals(HoldState.EXPIRED, library.holdsOf("m2", returned.plusDays(4)).get(0).state());
+    }
+
+    @Test
+    void holdsQueryOfAWaitingMemberAdvancesTheQueuePastPassedPickupWindows() {
+        library.checkout("b1", "m1", TODAY);
+        library.placeHold("b1", "m2", TODAY);
+        library.placeHold("b1", "m3", TODAY);
+        LocalDate returned = TODAY.plusDays(5);
+        library.returnBook("b1", returned);
+
+        Hold hold = library.holdsOf("m3", returned.plusDays(4)).get(0);
+        assertEquals(HoldState.READY_FOR_PICKUP, hold.state());
+        assertEquals(returned.plusDays(4), hold.readyOn());
     }
 }

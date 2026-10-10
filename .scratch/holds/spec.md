@@ -38,7 +38,7 @@ Members can place a Hold on a Book that is not on the shelf. Holds on the same B
 
 ## Implementation Decisions
 
-- **One seam.** All behaviour goes through `LibraryService`, alongside `checkout` and `returnBook`. New operations: place a Hold (Book, Member, today), cancel a Hold (Book, Member, today), and a read-only query of a Member's Holds with their state.
+- **One seam.** All behaviour goes through `LibraryService`, alongside `checkout` and `returnBook`. New operations: place a Hold (Book, Member, today), cancel a Hold (Book, Member, today), and a query of a Member's Holds with their state (Member, today). Like every other operation, the query first Expires any Hold whose Pickup window has passed, so it never reports a stale Ready for pickup.
 - **Time is passed in.** Every operation takes `today`, as the existing ones do. There is no clock and no background job. Expiry is evaluated lazily: whenever an operation touches a Book, a Ready-for-pickup Hold whose Pickup window ended before `today` is marked Expired and the queue advances (possibly repeatedly, if several windows have passed).
 - **Hold states:** waiting, Ready for pickup, Fulfilled, Cancelled, Expired. The last three are final. Ready for pickup records the date its Pickup window started.
 - **Pickup window:** 3 days starting the day the Book is returned. A Book returned on day D can be borrowed by the Ready-for-pickup Member up to and including day D+3. Each newly Ready-for-pickup Hold gets its own window starting from the day it became ready (the day the previous one Expired or was Cancelled).
