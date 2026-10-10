@@ -8,10 +8,10 @@ public class FeeCalculator {
     static final BigDecimal DAILY_LATE_FEE = new BigDecimal("0.25");
 
     public BigDecimal lateFee(LocalDate dueDate, LocalDate returnDate) {
-        if (returnDate.isBefore(dueDate)) {
+        if (!returnDate.isAfter(dueDate)) {
             return BigDecimal.ZERO;
         }
-        long daysLate = ChronoUnit.DAYS.between(dueDate, returnDate) + 1;
+        long daysLate = ChronoUnit.DAYS.between(dueDate, returnDate);
         return DAILY_LATE_FEE.multiply(BigDecimal.valueOf(daysLate));
     }
 }

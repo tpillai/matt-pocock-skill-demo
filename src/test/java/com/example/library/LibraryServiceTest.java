@@ -52,6 +52,19 @@ class LibraryServiceTest {
     }
 
     @Test
+    void returnOnDueDateIsFree() {
+        Loan loan = library.checkout("b1", "m1", TODAY);
+        BigDecimal fee = library.returnBook("b1", loan.dueDate());
+        assertEquals(0, fee.signum(), "fee charged: " + fee);
+    }
+
+    @Test
+    void returnOneDayLateChargesOneDaysFee() {
+        Loan loan = library.checkout("b1", "m1", TODAY);
+        assertEquals(new BigDecimal("0.25"), library.returnBook("b1", loan.dueDate().plusDays(1)));
+    }
+
+    @Test
     void lateReturnChargesAFee() {
         library.checkout("b1", "m1", TODAY);
         BigDecimal fee = library.returnBook("b1", TODAY.plusDays(20));
