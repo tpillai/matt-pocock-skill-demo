@@ -6,7 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-/** In-memory Books, Members, Loans and Holds. Answers questions; never hands out its collections. */
+/**
+ * In-memory Books, Members, Loans and Holds. Answers questions; never hands out its collections.
+ * Callers may add Books and Members; only LibraryService writes Loans and Holds.
+ */
 public class LibraryStore {
     private final Map<String, Book> books = new HashMap<>();
     private final Map<String, Member> members = new HashMap<>();
@@ -15,8 +18,8 @@ public class LibraryStore {
 
     public void saveBook(Book book) { books.put(book.isbn(), book); }
     public void saveMember(Member member) { members.put(member.id(), member); }
-    public void saveLoan(Loan loan) { loans.add(loan); }
-    public void saveHold(Hold hold) { holds.add(hold); }
+    void saveLoan(Loan loan) { loans.add(loan); }
+    void saveHold(Hold hold) { holds.add(hold); }
 
     public boolean isKnownBook(String isbn) { return books.containsKey(isbn); }
 
@@ -46,12 +49,12 @@ public class LibraryStore {
     }
 
     /** Replaces a Loan in place. */
-    public void replaceLoan(Loan existing, Loan updated) {
+    void replaceLoan(Loan existing, Loan updated) {
         replace(loans, existing, updated, "Unknown loan: ");
     }
 
     /** Replaces a Hold in place, keeping its position in the Hold queue. */
-    public void replaceHold(Hold existing, Hold updated) {
+    void replaceHold(Hold existing, Hold updated) {
         replace(holds, existing, updated, "Unknown hold: ");
     }
 
