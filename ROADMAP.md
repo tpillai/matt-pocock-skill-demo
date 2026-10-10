@@ -18,6 +18,23 @@ Side entrances: `/diagnosing-bugs` for something broken, `/improve-codebase-arch
 for design debt, `/wayfinder` for work too big for one session, `/prototype` for a
 throwaway design question. Not sure which? Ask `/ask-matt`.
 
+## Progress (updated 10 October 2026)
+
+| Phase | Status |
+|---|---|
+| 0 Setup | **Done.** mattpocock-skills 1.3.1 from Matt's marketplace, local-markdown tracker, pre-commit hook runs `mvn -q test`. |
+| 1 Alignment | **Exercise A grilled.** `/grill-with-docs` produced `GLOSSARY.md` and ADR 0001. `/grill-me`, `/wait-what` and reading `/codebase-design` aren't recorded in the repo. |
+| 2 Build | **Done.** Holds spec and tickets 01-05 implemented with `/implement`, `/tdd` and `/code-review`; spec and tickets closed. Two `/retro`s. |
+| 3 Bugs and architecture | **Next.** `/diagnosing-bugs` was used once on a real Holds bug (the Holds query reported Expired Holds as Ready for pickup), so Exercise B is still open, as are Exercise C and `/prototype`. |
+| 4 Working style | Not started. |
+
+What the retros added: a pre-commit hook, `LibraryServiceContractTest` (every
+operation takes `today`), rules for closing tickets and specs in
+`docs/agents/issue-tracker.md`, ADR 0002 (lazy expiry), `CODING_STANDARDS.md`,
+and the Holds tests split into one class per behaviour.
+
+Next step: Exercise B. `/clear`, then give `/diagnosing-bugs` only the symptom.
+
 ## Phase 0: Install and set up (30 minutes)
 
 1. Install the plugin (one way only, or you get every skill twice):
@@ -103,6 +120,9 @@ a member places a hold on a borrowed book; on return, the first holder gets it.
 Start with `/grill-with-docs` and let it ask you the hard questions (How long
 is a hold kept? Can you hold a book that's on the shelf? Does a hold count
 toward the 3-loan limit?). Don't answer them in advance.
+
+**Done.** The spec and tickets are in `.scratch/holds/`, the terms in
+`GLOSSARY.md`, the decisions in `docs/adr/`.
 
 ### Exercise B: seeded bug (Phase 3)
 The scenario prints `Fee charged: $0.25` for a book returned **on** its due
