@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 public class LibraryService {
     static final int LOAN_PERIOD_DAYS = 14;
     static final int MAX_ACTIVE_LOANS = 3;
+    static final int PICKUP_WINDOW_DAYS = 3;
 
     private final LoanRepository repo;
     private final FeeCalculator fees;
@@ -22,6 +23,7 @@ public class LibraryService {
 
     public Loan checkout(String isbn, String memberId, LocalDate today) {
         requireKnown(isbn, memberId);
+        expireLapsedHolds(isbn, today);
         if (findActiveLoan(isbn).isPresent()) {
             throw new IllegalStateException("Book already on loan: " + isbn);
         }
@@ -52,6 +54,7 @@ public class LibraryService {
 
     public Hold placeHold(String isbn, String memberId, LocalDate today) {
         requireKnown(isbn, memberId);
+        expireLapsedHolds(isbn, today);
         Optional<Loan> loan = findActiveLoan(isbn);
         if (loan.isEmpty() && findReadyHold(isbn).isEmpty()) {
             throw new IllegalStateException("Book is on the shelf, borrow it instead: " + isbn);
@@ -72,6 +75,26 @@ public class LibraryService {
         return repo.getHolds().stream()
                 .filter(h -> h.memberId().equals(memberId))
                 .toList();
+    }
+
+    /**
+     * Expires each Ready-for-pickup Hold whose Pickup window ended before today and hands the Book
+     * to the next Waiting Hold. Each new window starts the day after the previous one ended, so
+     * several lapsed windows advance the queue in turn.
+     */
+    private void expireLapsedHolds(String isbn, LocalDate today) {
+        Optional<Hold> ready = findReadyHold(isbn);
+        while (ready.isPresent()) {
+            Hold hold = ready.get();
+            LocalDate lastPickupDay = hold.readyOn().plusDays(PICKUP_WINDOW_DAYS);
+            if (!today.isAfter(lastPickupDay)) {
+                return;
+            }
+            repo.replaceHold(hold, hold.expired());
+            LocalDate expiredOn = lastPickupDay.plusDays(1);
+            firstHoldOn(isbn, Hold::isWaiting).ifPresent(h -> repo.replaceHold(h, h.readyForPickup(expiredOn)));
+            ready = findReadyHold(isbn);
+        }
     }
 
     private Optional<Hold> findReadyHold(String isbn) {

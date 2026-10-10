@@ -1,3 +1,3 @@
 package com.example.library;
 
-public enum HoldState { WAITING, READY_FOR_PICKUP, FULFILLED }
+public enum HoldState { WAITING, READY_FOR_PICKUP, FULFILLED, EXPIRED }

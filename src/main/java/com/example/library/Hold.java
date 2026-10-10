@@ -17,5 +17,7 @@ public record Hold(String isbn, String memberId, LocalDate placedOn, HoldState s
 
     Hold readyForPickup(LocalDate today) { return new Hold(isbn, memberId, placedOn, HoldState.READY_FOR_PICKUP, today); }
 
+    Hold expired() { return new Hold(isbn, memberId, placedOn, HoldState.EXPIRED, readyOn); }
+
     Hold fulfilled() { return new Hold(isbn, memberId, placedOn, HoldState.FULFILLED, readyOn); }
 }
