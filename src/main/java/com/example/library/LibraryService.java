@@ -50,7 +50,7 @@ public class LibraryService {
         if (loan.getMemberId().equals(memberId)) {
             throw new IllegalStateException("Member already has this book on loan: " + isbn);
         }
-        if (holdsOf(memberId).stream().anyMatch(h -> h.isbn().equals(isbn))) {
+        if (holdsOf(memberId).stream().anyMatch(h -> h.isActive() && h.isbn().equals(isbn))) {
             throw new IllegalStateException("Member already holds this book: " + isbn);
         }
         Hold hold = new Hold(isbn, memberId, today, HoldState.WAITING);

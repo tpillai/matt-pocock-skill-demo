@@ -24,6 +24,10 @@ _Avoid_: Reservation, request
 The Holds on one Book, ordered strictly by when each was placed.
 _Avoid_: Waitlist, line
 
+**Waiting**:
+The state of a Hold in the Hold queue whose turn has not yet come.
+_Avoid_: Pending, queued
+
 **Ready for pickup**:
 The state of the first Hold in the queue once its Book is returned: the Book is set aside, and only that Member may borrow it.
 _Avoid_: Reserved, on the hold shelf
