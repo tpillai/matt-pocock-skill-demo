@@ -44,8 +44,8 @@ class ReturnHandOffTest extends HoldsFixture {
 
         Loan loan = library.checkout("b1", "m2", TODAY.plusDays(6));
 
-        assertEquals("m2", loan.getMemberId());
-        assertEquals(TODAY.plusDays(20), loan.getDueDate());
+        assertEquals("m2", loan.memberId());
+        assertEquals(TODAY.plusDays(20), loan.dueDate());
         assertEquals(HoldState.FULFILLED, library.holdsOf("m2", TODAY.plusDays(6)).get(0).state());
     }
 
@@ -80,7 +80,7 @@ class ReturnHandOffTest extends HoldsFixture {
 
         BigDecimal fee = library.returnBook("b1", returnDate);
 
-        assertEquals(new FeeCalculator().lateFee(loan.getDueDate(), returnDate), fee);
+        assertEquals(new FeeCalculator().lateFee(loan.dueDate(), returnDate), fee);
     }
 
     @Test

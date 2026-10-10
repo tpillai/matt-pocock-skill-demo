@@ -10,12 +10,12 @@ import org.junit.jupiter.api.Test;
 class LibraryServiceTest {
     private static final LocalDate TODAY = LocalDate.of(2026, 10, 1);
 
-    private LoanRepository repo;
+    private LibraryStore repo;
     private LibraryService library;
 
     @BeforeEach
     void setUp() {
-        repo = new LoanRepository();
+        repo = new LibraryStore();
         library = new LibraryService(repo, new FeeCalculator());
         repo.saveBook(new Book("b1", "Book One", "A"));
         repo.saveBook(new Book("b2", "Book Two", "B"));
@@ -28,7 +28,7 @@ class LibraryServiceTest {
     @Test
     void checkoutSetsDueDateFourteenDaysOut() {
         Loan loan = library.checkout("b1", "m1", TODAY);
-        assertEquals(TODAY.plusDays(14), loan.getDueDate());
+        assertEquals(TODAY.plusDays(14), loan.dueDate());
     }
 
     @Test

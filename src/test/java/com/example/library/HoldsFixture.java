@@ -7,12 +7,12 @@ import org.junit.jupiter.api.BeforeEach;
 abstract class HoldsFixture {
     static final LocalDate TODAY = LocalDate.of(2026, 10, 1);
 
-    LoanRepository repo;
+    LibraryStore repo;
     LibraryService library;
 
     @BeforeEach
     void setUp() {
-        repo = new LoanRepository();
+        repo = new LibraryStore();
         library = new LibraryService(repo, new FeeCalculator());
         repo.saveBook(new Book("b1", "Book One", "A"));
         repo.saveMember(new Member("m1", "Member One"));

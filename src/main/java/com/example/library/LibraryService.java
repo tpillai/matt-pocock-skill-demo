@@ -11,55 +11,51 @@ public class LibraryService {
     static final int MAX_ACTIVE_LOANS = 3;
     static final int MAX_ACTIVE_HOLDS = 3;
 
-    private final LoanRepository repo;
+    private final LibraryStore store;
     private final FeeCalculator fees;
 
-    public LibraryService(LoanRepository repo, FeeCalculator fees) {
-        this.repo = repo;
+    public LibraryService(LibraryStore store, FeeCalculator fees) {
+        this.store = store;
         this.fees = fees;
     }
-
-    public LoanRepository getRepo() { return repo; }
 
     public Loan checkout(String isbn, String memberId, LocalDate today) {
         requireKnown(isbn, memberId);
         expireHoldsPastPickupWindow(isbn, today);
-        if (findActiveLoan(isbn).isPresent()) {
+        if (store.activeLoanOn(isbn).isPresent()) {
             throw new IllegalStateException("Book already on loan: " + isbn);
         }
         Optional<Hold> ready = findReadyHold(isbn);
         if (ready.isPresent() && !ready.get().memberId().equals(memberId)) {
             throw new IllegalStateException("Book is held for another member: " + isbn);
         }
-        long active = repo.getLoans().stream()
-                .filter(l -> l.getMemberId().equals(memberId) && l.isActive())
-                .count();
+        long active = store.activeLoanCount(memberId);
         if (active >= MAX_ACTIVE_LOANS) {
             throw new IllegalStateException("Member has too many loans: " + memberId);
         }
         Loan loan = new Loan(isbn, memberId, today, today.plusDays(LOAN_PERIOD_DAYS));
-        repo.saveLoan(loan);
-        ready.ifPresent(h -> repo.replaceHold(h, h.fulfilled()));
+        store.saveLoan(loan);
+        ready.ifPresent(h -> store.replaceHold(h, h.fulfilled()));
         return loan;
     }
 
     /** Returns the book and the late fee owed. */
     public BigDecimal returnBook(String isbn, LocalDate today) {
-        Loan loan = findActiveLoan(isbn)
+        Loan loan = store.activeLoanOn(isbn)
                 .orElseThrow(() -> new IllegalStateException("Book is not on loan: " + isbn));
-        loan.setReturnDate(today);
+        store.replaceLoan(loan, loan.returned(today));
         handToNextWaitingHold(isbn, today);
-        return fees.lateFee(loan.getDueDate(), today);
+        return fees.lateFee(loan.dueDate(), today);
     }
 
     public Hold placeHold(String isbn, String memberId, LocalDate today) {
         requireKnown(isbn, memberId);
         expireHoldsPastPickupWindow(isbn, today);
-        Optional<Loan> loan = findActiveLoan(isbn);
+        Optional<Loan> loan = store.activeLoanOn(isbn);
         if (loan.isEmpty() && findReadyHold(isbn).isEmpty()) {
             throw new IllegalStateException("Book is on the shelf, borrow it instead: " + isbn);
         }
-        if (loan.isPresent() && loan.get().getMemberId().equals(memberId)) {
+        if (loan.isPresent() && loan.get().memberId().equals(memberId)) {
             throw new IllegalStateException("Member already has this book on loan: " + isbn);
         }
         if (findActiveHold(isbn, memberId).isPresent()) {
@@ -69,7 +65,7 @@ public class LibraryService {
             throw new IllegalStateException("Member has too many holds: " + memberId);
         }
         Hold hold = new Hold(isbn, memberId, today, HoldState.WAITING, null);
-        repo.saveHold(hold);
+        store.saveHold(hold);
         return hold;
     }
 
@@ -79,7 +75,7 @@ public class LibraryService {
         Hold hold = findActiveHold(isbn, memberId)
                 .orElseThrow(() -> new IllegalStateException("Member has no active hold on this book: " + isbn));
         Hold cancelled = hold.cancelled();
-        repo.replaceHold(hold, cancelled);
+        store.replaceHold(hold, cancelled);
         if (hold.isReadyForPickup()) {
             handToNextWaitingHold(isbn, today);
         }
@@ -88,23 +84,17 @@ public class LibraryService {
 
     /** The Member's Holds as of today, in the order they were placed. */
     public List<Hold> holdsOf(String memberId, LocalDate today) {
-        holdsPlacedBy(memberId).stream()
+        store.holdsPlacedBy(memberId).stream()
                 .filter(Hold::isActive)
                 .map(Hold::isbn)
                 .distinct()
                 .forEach(isbn -> expireHoldsPastPickupWindow(isbn, today));
-        return holdsPlacedBy(memberId);
+        return store.holdsPlacedBy(memberId);
     }
 
     /** Waiting and Ready-for-pickup Holds, after Expiring any on the Member's other Books whose window has passed. */
     private long activeHoldCount(String memberId, LocalDate today) {
         return holdsOf(memberId, today).stream().filter(Hold::isActive).count();
-    }
-
-    private List<Hold> holdsPlacedBy(String memberId) {
-        return repo.getHolds().stream()
-                .filter(h -> h.memberId().equals(memberId))
-                .toList();
     }
 
     /**
@@ -116,7 +106,7 @@ public class LibraryService {
         Optional<Hold> ready = findReadyHold(isbn);
         while (ready.isPresent() && today.isAfter(ready.get().lastPickupDay())) {
             Hold hold = ready.get();
-            repo.replaceHold(hold, hold.expired());
+            store.replaceHold(hold, hold.expired());
             handToNextWaitingHold(isbn, hold.lastPickupDay().plusDays(1));
             ready = findReadyHold(isbn);
         }
@@ -124,7 +114,7 @@ public class LibraryService {
 
     /** Sets the Book aside for the first Waiting Hold, if any; otherwise it is on the shelf. */
     private void handToNextWaitingHold(String isbn, LocalDate readyOn) {
-        firstHoldOn(isbn, Hold::isWaiting).ifPresent(h -> repo.replaceHold(h, h.readyForPickup(readyOn)));
+        firstHoldOn(isbn, Hold::isWaiting).ifPresent(h -> store.replaceHold(h, h.readyForPickup(readyOn)));
     }
 
     /** The Member's Waiting or Ready-for-pickup Hold on the Book; there is at most one. */
@@ -138,23 +128,15 @@ public class LibraryService {
 
     /** The first Hold in the Book's Hold queue (placement order) that matches. */
     private Optional<Hold> firstHoldOn(String isbn, Predicate<Hold> matching) {
-        return repo.getHolds().stream()
-                .filter(h -> h.isbn().equals(isbn) && matching.test(h))
-                .findFirst();
+        return store.holdQueueOn(isbn).stream().filter(matching).findFirst();
     }
 
     private void requireKnown(String isbn, String memberId) {
-        if (!repo.getBooks().containsKey(isbn)) {
+        if (!store.isKnownBook(isbn)) {
             throw new IllegalArgumentException("Unknown book: " + isbn);
         }
-        if (!repo.getMembers().containsKey(memberId)) {
+        if (!store.isKnownMember(memberId)) {
             throw new IllegalArgumentException("Unknown member: " + memberId);
         }
-    }
-
-    public Optional<Loan> findActiveLoan(String isbn) {
-        return repo.getLoans().stream()
-                .filter(l -> l.getIsbn().equals(isbn) && l.isActive())
-                .findFirst();
     }
 }
