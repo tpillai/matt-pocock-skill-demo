@@ -23,5 +23,7 @@ public record Hold(String isbn, String memberId, LocalDate placedOn, HoldState s
 
     Hold expired() { return new Hold(isbn, memberId, placedOn, HoldState.EXPIRED, readyOn); }
 
+    Hold cancelled() { return new Hold(isbn, memberId, placedOn, HoldState.CANCELLED, readyOn); }
+
     Hold fulfilled() { return new Hold(isbn, memberId, placedOn, HoldState.FULFILLED, readyOn); }
 }

@@ -61,12 +61,25 @@ public class LibraryService {
         if (loan.isPresent() && loan.get().getMemberId().equals(memberId)) {
             throw new IllegalStateException("Member already has this book on loan: " + isbn);
         }
-        if (holdsPlacedBy(memberId).stream().anyMatch(h -> h.isActive() && h.isbn().equals(isbn))) {
+        if (findActiveHold(isbn, memberId).isPresent()) {
             throw new IllegalStateException("Member already holds this book: " + isbn);
         }
         Hold hold = new Hold(isbn, memberId, today, HoldState.WAITING, null);
         repo.saveHold(hold);
         return hold;
+    }
+
+    public Hold cancelHold(String isbn, String memberId, LocalDate today) {
+        requireKnown(isbn, memberId);
+        expireHoldsPastPickupWindow(isbn, today);
+        Hold hold = findActiveHold(isbn, memberId)
+                .orElseThrow(() -> new IllegalStateException("Member has no active hold on this book: " + isbn));
+        Hold cancelled = hold.cancelled();
+        repo.replaceHold(hold, cancelled);
+        if (hold.isReadyForPickup()) {
+            handToNextWaitingHold(isbn, today);
+        }
+        return cancelled;
     }
 
     /** The Member's Holds as of today, in the order they were placed. */
@@ -103,6 +116,11 @@ public class LibraryService {
     /** Sets the Book aside for the first Waiting Hold, if any; otherwise it is on the shelf. */
     private void handToNextWaitingHold(String isbn, LocalDate readyOn) {
         firstHoldOn(isbn, Hold::isWaiting).ifPresent(h -> repo.replaceHold(h, h.readyForPickup(readyOn)));
+    }
+
+    /** The Member's Waiting or Ready-for-pickup Hold on the Book; there is at most one. */
+    private Optional<Hold> findActiveHold(String isbn, String memberId) {
+        return firstHoldOn(isbn, h -> h.isActive() && h.memberId().equals(memberId));
     }
 
     private Optional<Hold> findReadyHold(String isbn) {
