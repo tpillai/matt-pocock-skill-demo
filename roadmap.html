@@ -1,0 +1,300 @@
+<title>Skills Roadmap</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; a flow diagram up top, then four phase "stations" down a vertical line, then exercise cards styled like library due-date slips. */
+:root {
+  --bg: #f3f5f7;
+  --surface: #ffffff;
+  --ink: #18222d;
+  --muted: #5b6875;
+  --line: #d6dde4;
+  --accent: #0f6b74;
+  --accent-soft: #dcefef;
+  --stamp: #b5531c;
+  --hi: #f2c94c;
+  --code-bg: #e9eef2;
+  --f-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #11171d; --surface: #19222a; --ink: #e6edf2; --muted: #9aa8b4; --line: #2c3a46;
+  --accent: #5cc4cc; --accent-soft: #173539; --stamp: #f08b55; --hi: #e0b93a; --code-bg: #222d37; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #11171d; --surface: #19222a; --ink: #e6edf2; --muted: #9aa8b4; --line: #2c3a46;
+  --accent: #5cc4cc; --accent-soft: #173539; --stamp: #f08b55; --hi: #e0b93a; --code-bg: #222d37; color-scheme: dark }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 16px; line-height: 1.6; padding-inline: 16px; padding-block: 40px 64px; }
+.wrap { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+h1, h2, h3 { font-family: var(--f-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 6vw, 3.1rem); font-weight: 800; letter-spacing: -0.02em; }
+h2 { font-size: 1.6rem; font-weight: 800; }
+h3 { font-size: 1.15rem; font-weight: 600; }
+p { margin: 0; max-width: 65ch; }
+.eyebrow { font-family: var(--f-mono); font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.lede { color: var(--muted); font-size: 1.1rem; }
+code, kbd { font-family: var(--f-mono); font-size: 0.88em; background: var(--code-bg); padding: 1px 6px; border-radius: 4px; }
+a { color: var(--accent); }
+section { display: flex; flex-direction: column; gap: 20px; }
+header { display: flex; flex-direction: column; gap: 14px; }
+
+/* progress */
+.progress { display: flex; align-items: center; gap: 12px; font-family: var(--f-mono); font-size: 0.85rem; color: var(--muted); }
+.bar { flex: 1; height: 8px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.bar > i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .3s; }
+
+/* flow */
+.flow-box { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 20px; overflow-x: auto; }
+.flow { display: flex; align-items: stretch; gap: 0; min-width: 640px; }
+.node { flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 8px; background: var(--accent-soft); border: 1px solid transparent; }
+.node b { font-family: var(--f-mono); font-size: 0.85rem; color: var(--accent); font-weight: 500; }
+.node span { font-size: 0.82rem; color: var(--muted); line-height: 1.4; }
+.node.build { background: var(--surface); border-color: var(--accent); }
+.arrow { display: flex; align-items: center; padding: 0 6px; color: var(--muted); font-family: var(--f-mono); }
+.sub { display: flex; justify-content: center; gap: 10px; margin-top: 12px; font-size: 0.82rem; color: var(--muted); min-width: 640px; flex-wrap: wrap; }
+.sub code { color: var(--accent); }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 0.88rem; color: var(--muted); }
+.side { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+.side div { border: 1px dashed var(--line); border-radius: 8px; padding: 10px 12px; font-size: 0.88rem; }
+.side code { display: inline-block; margin-bottom: 2px; }
+
+/* phases */
+.phases { display: flex; flex-direction: column; gap: 0; position: relative; }
+.phase { display: grid; grid-template-columns: 44px 1fr; gap: 16px; position: relative; padding-bottom: 32px; }
+.phase:last-child { padding-bottom: 0; }
+.phase::before { content: ""; position: absolute; left: 21px; top: 44px; bottom: 0; width: 2px; background: var(--line); }
+.phase:last-child::before { display: none; }
+.dot { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; font-family: var(--f-display); font-weight: 800; background: var(--surface); border: 2px solid var(--accent); color: var(--accent); }
+.phase.done .dot { background: var(--accent); color: var(--bg); }
+.pbody { min-width: 0; display: flex; flex-direction: column; gap: 10px; padding-top: 6px; }
+.meta { font-family: var(--f-mono); font-size: 0.78rem; color: var(--muted); }
+.goal { color: var(--muted); }
+ul.steps { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+ul.steps li label { display: grid; grid-template-columns: 22px 1fr; gap: 10px; align-items: start; cursor: pointer; padding: 8px 10px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line); }
+ul.steps li label:hover { border-color: var(--accent); }
+ul.steps input { margin: 4px 0 0; accent-color: var(--accent); width: 16px; height: 16px; }
+ul.steps input:checked + span { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--line); }
+ul.steps input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.exit { font-size: 0.9rem; padding: 10px 12px; border-left: 3px solid var(--hi); background: var(--surface); border-radius: 0 6px 6px 0; }
+.exit strong { font-family: var(--f-mono); font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+
+/* commands */
+.cmd { display: flex; align-items: center; gap: 8px; background: var(--code-bg); border-radius: 8px; padding: 8px 8px 8px 12px; min-width: 0; }
+.cmd code { background: none; padding: 0; flex: 1; overflow-x: auto; white-space: nowrap; }
+.cmd button { font: 500 0.75rem var(--f-mono); border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 6px; padding: 4px 10px; cursor: pointer; flex-shrink: 0; }
+.cmd button:hover { border-color: var(--accent); }
+.cmd button:focus-visible { outline: 2px solid var(--accent); }
+
+/* exercises as due-date slips */
+.slips { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.slip { background: var(--surface); border: 1px solid var(--line); border-radius: 4px; padding: 16px; display: flex; flex-direction: column; gap: 10px; position: relative; min-width: 0;
+  background-image: repeating-linear-gradient(var(--surface) 0 27px, var(--line) 27px 28px); background-position: 0 52px; background-repeat: no-repeat; background-size: 100% calc(100% - 52px); }
+.slip .tag { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.slip h3 { font-size: 1.05rem; }
+.slip p { font-size: 0.9rem; line-height: 28px; }
+.stamp { align-self: flex-start; font-family: var(--f-mono); font-size: 0.75rem; font-weight: 500; color: var(--stamp); border: 2px solid var(--stamp); border-radius: 4px; padding: 2px 8px; transform: rotate(-3deg); letter-spacing: 0.05em; background: var(--surface); }
+.terminal { background: var(--code-bg); border-radius: 8px; padding: 14px 16px; font-family: var(--f-mono); font-size: 0.82rem; line-height: 1.7; overflow-x: auto; white-space: pre; }
+.terminal .flag { color: var(--stamp); font-weight: 500; }
+
+.habits { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.habits div { padding: 12px 14px; border-top: 3px solid var(--accent); background: var(--surface); font-size: 0.92rem; }
+footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 16px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Claude Code · mattpocock/skills · Java practice</div>
+    <h1>Learn Matt Pocock's skills by building a library app</h1>
+    <p class="lede">Four phases, three planted exercises, one Java project. Tick steps as you go; your progress stays in this browser.</p>
+    <div class="progress"><span id="pct">0 of 0 steps</span><div class="bar"><i id="barfill"></i></div></div>
+  </header>
+
+  <section>
+    <div class="eyebrow">The core loop</div>
+    <h2>How a feature moves through the skills</h2>
+    <div class="flow-box">
+      <div class="flow">
+        <div class="node"><b>/grill-with-docs</b><span>Agent interviews you until the plan has no open branches. Writes GLOSSARY.md and ADRs.</span></div>
+        <div class="arrow">→</div>
+        <div class="node"><b>/to-spec</b><span>Turns the conversation into a spec on your tracker.</span></div>
+        <div class="arrow">→</div>
+        <div class="node"><b>/to-tickets</b><span>Thin vertical-slice tickets with "blocked by" edges.</span></div>
+        <div class="arrow">→</div>
+        <div class="node build"><b>/implement</b><span>One ticket per session. <kbd>/clear</kbd> between tickets.</span></div>
+        <div class="arrow">→</div>
+        <div class="node"><b>/retro</b><span>Improves the environment so the next build goes better.</span></div>
+      </div>
+      <div class="sub"><span>Inside every <code>/implement</code>:</span><span><code>/tdd</code> red → green → refactor, one slice at a time</span><span>→</span><span><code>/code-review</code> on Standards + Spec</span></div>
+    </div>
+    <div class="legend"><span>Keep grill → spec → tickets in <strong>one</strong> context window.</span><span>Then start each ticket fresh.</span></div>
+    <div class="side">
+      <div><code>/diagnosing-bugs</code><br>Something is broken. Gets one red command first, then fixes with a regression test.</div>
+      <div><code>/improve-codebase-architecture</code><br>Design debt. HTML report of deepening options, then a grill.</div>
+      <div><code>/wayfinder</code><br>Too big and foggy for one session. Maps decisions before building.</div>
+      <div><code>/ask-matt</code><br>Not sure which skill fits? Describe your situation.</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Roadmap</div>
+    <h2>Four phases, about a week each</h2>
+    <div class="phases" id="phases">
+
+      <div class="phase" data-phase="0">
+        <div class="dot">0</div>
+        <div class="pbody">
+          <div class="meta">SETUP · 30 MINUTES</div>
+          <h3>Install and configure</h3>
+          <ul class="steps">
+            <li><label><input type="checkbox" id="s0a" checked><span>Install the plugin <span class="meta">(done for you)</span></span></label></li>
+            <li><label><input type="checkbox" id="s0b" checked><span>Init git and make a baseline commit <span class="meta">(done: ae6e36b)</span></span></label></li>
+            <li><label><input type="checkbox" id="s0c"><span>Start <code>claude</code> in the project folder and run <code>/setup-matt-pocock-skills</code>. Pick <strong>Local markdown</strong> tracker, default labels, single-context docs.</span></label></li>
+            <li><label><input type="checkbox" id="s0d"><span>Read what it wrote in <code>docs/agents/</code> and the new block in <code>CLAUDE.md</code>.</span></label></li>
+            <li><label><input type="checkbox" id="s0e"><span>Type <kbd>/</kbd> and check for duplicate names like <code>code-review</code>. Use <code>/mattpocock-skills:code-review</code> if ambiguous.</span></label></li>
+          </ul>
+          <div class="cmd"><code>cd ~/Tejas/oct/matt-pocock-skill-demo &amp;&amp; claude</code><button type="button" data-copy>Copy</button></div>
+        </div>
+      </div>
+
+      <div class="phase" data-phase="1">
+        <div class="dot">1</div>
+        <div class="pbody">
+          <div class="meta">ALIGNMENT · WEEK 1</div>
+          <h3>Get interviewed before you build</h3>
+          <p class="goal">Most bugs start as misunderstandings. The grilling skills fix that first.</p>
+          <ul class="steps">
+            <li><label><input type="checkbox" id="s1a"><span>Read <code>/codebase-design</code> for the vocabulary: module, interface, depth, seam.</span></label></li>
+            <li><label><input type="checkbox" id="s1b"><span>Warm up with <code>/grill-me</code> on any plan (no repo needed, saves nothing).</span></label></li>
+            <li><label><input type="checkbox" id="s1c"><span>Start <strong>Exercise A</strong> with <code>/grill-with-docs</code>: "I want members to place holds on borrowed books."</span></label></li>
+            <li><label><input type="checkbox" id="s1d"><span>Use <code>/wait-what</code> whenever an answer doesn't land.</span></label></li>
+          </ul>
+          <div class="exit"><strong>Exit check</strong>You can explain Loan vs Hold, and it's written in GLOSSARY.md.</div>
+        </div>
+      </div>
+
+      <div class="phase" data-phase="2">
+        <div class="dot">2</div>
+        <div class="pbody">
+          <div class="meta">SPEC → TICKETS → BUILD · WEEK 2</div>
+          <h3>Run the full loop once</h3>
+          <ul class="steps">
+            <li><label><input type="checkbox" id="s2a"><span>Same session as the grilling: <code>/to-spec</code>.</span></label></li>
+            <li><label><input type="checkbox" id="s2b"><span><code>/to-tickets</code>, then read each file in <code>.scratch/&lt;feature&gt;/issues/</code>.</span></label></li>
+            <li><label><input type="checkbox" id="s2c"><span><kbd>/clear</kbd>, then <code>/implement</code> ticket 01. Watch <code>/tdd</code> and <code>/code-review</code> run.</span></label></li>
+            <li><label><input type="checkbox" id="s2d"><span>Repeat per ticket, <kbd>/clear</kbd> between each.</span></label></li>
+            <li><label><input type="checkbox" id="s2e"><span><code>/retro</code> before clearing the last session.</span></label></li>
+          </ul>
+          <div class="cmd"><code>mvn -q test</code><button type="button" data-copy>Copy</button></div>
+          <div class="exit"><strong>Exit check</strong>Tests are green and read like the spec.</div>
+        </div>
+      </div>
+
+      <div class="phase" data-phase="3">
+        <div class="dot">3</div>
+        <div class="pbody">
+          <div class="meta">BUGS AND DESIGN · WEEK 3</div>
+          <h3>Debug with discipline, then deepen the design</h3>
+          <ul class="steps">
+            <li><label><input type="checkbox" id="s3a"><span><strong>Exercise B</strong>: give <code>/diagnosing-bugs</code> only the symptom.</span></label></li>
+            <li><label><input type="checkbox" id="s3b"><span><strong>Exercise C</strong>: run <code>/improve-codebase-architecture</code> and pick one option.</span></label></li>
+            <li><label><input type="checkbox" id="s3c"><span><code>/prototype</code> a design question, like "should holds expire?"</span></label></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="phase" data-phase="4">
+        <div class="dot">4</div>
+        <div class="pbody">
+          <div class="meta">WORKING STYLE · WEEK 4</div>
+          <h3>Habits for real projects</h3>
+          <ul class="steps">
+            <li><label><input type="checkbox" id="s4a"><span><code>/research</code>: "how do real libraries handle holds?" runs in the background.</span></label></li>
+            <li><label><input type="checkbox" id="s4b"><span><code>/handoff</code> a session to a new folder or a colleague.</span></label></li>
+            <li><label><input type="checkbox" id="s4c"><span>Push to GitHub with <code>gh repo create</code>, re-run setup for GitHub issues, then open a PR with <code>/pr</code>.</span></label></li>
+            <li><label><input type="checkbox" id="s4d"><span>Try <code>/teach</code> or write your own skill with <code>/writing-for-agents</code>.</span></label></li>
+            <li><label><input type="checkbox" id="s4e"><span>Save <code>/wayfinder</code> for something truly big, like multi-branch libraries.</span></label></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Practice project</div>
+    <h2>Three exercises are planted in the code</h2>
+    <p>Run the scenario and you'll see all three problems in the output.</p>
+    <div class="cmd"><code>mvn -q compile exec:java</code><button type="button" data-copy>Copy</button></div>
+    <div class="terminal">Asha borrowed Effective Java, due 2026-10-15
+<span class="flag">Ravi could not borrow it: Book already on loan</span>          ← A
+<span class="flag">Asha returned it on the due date. Fee charged: $0.25</span>  ← B
+<span class="flag">Ravi's Clean Code is now due 2027-10-01 (nobody stopped that)</span>  ← C</div>
+    <div class="slips">
+      <div class="slip">
+        <div class="tag">Exercise A · Phases 1–2</div>
+        <h3>Missing feature: holds</h3>
+        <p>Ravi can't queue for a borrowed book. Build holds through the full loop. Let the grill ask how long a hold lasts and whether it counts toward the 3-loan limit.</p>
+        <div class="stamp">FEATURE</div>
+      </div>
+      <div class="slip">
+        <div class="tag">Exercise B · Phase 3</div>
+        <h3>Seeded bug: due-date fee</h3>
+        <p>Returning on the due date costs $0.25. Tests pass because one only checks the fee is positive. Don't say where the bug is.</p>
+        <div class="stamp">OVERDUE?</div>
+      </div>
+      <div class="slip">
+        <div class="tag">Exercise C · Phase 3</div>
+        <h3>Shallow, leaky design</h3>
+        <p><code>LoanRepository</code> hands out raw collections, <code>Loan</code> has public setters, and the app edits a due date directly.</p>
+        <div class="stamp">REFACTOR</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">Keep these</div>
+    <h2>Habits</h2>
+    <div class="habits">
+      <div><strong>Grill first.</strong> Cheaper than building the wrong thing.</div>
+      <div><strong>One window</strong> for grill, spec and tickets. Fresh window per ticket.</div>
+      <div><strong>Vertical slices</strong>, test first, one at a time.</div>
+      <div><strong>Retro</strong> after rough sessions. Turn mistakes into checks.</div>
+    </div>
+  </section>
+
+  <footer>Skill names and the core loop come from <a href="https://github.com/mattpocock/skills">github.com/mattpocock/skills</a> (checked October 2026). The weekly pacing is a suggestion. Project: Java 21, Maven, JUnit 5.</footer>
+</div>
+
+<script>
+(function () {
+  const KEY = "skills-roadmap-v1";
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
+  const boxes = Array.from(document.querySelectorAll('.steps input[type="checkbox"]'));
+  boxes.forEach(b => { if (b.id in saved) b.checked = saved[b.id]; });
+  function update() {
+    const done = boxes.filter(b => b.checked).length;
+    document.getElementById("pct").textContent = done + " of " + boxes.length + " steps";
+    document.getElementById("barfill").style.width = (100 * done / boxes.length) + "%";
+    document.querySelectorAll(".phase").forEach(p => {
+      const bs = p.querySelectorAll('input[type="checkbox"]');
+      p.classList.toggle("done", bs.length > 0 && Array.from(bs).every(b => b.checked));
+    });
+    const state = {}; boxes.forEach(b => state[b.id] = b.checked);
+    try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {}
+  }
+  boxes.forEach(b => b.addEventListener("change", update));
+  update();
+  document.querySelectorAll("[data-copy]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const text = btn.previousElementSibling.textContent;
+      const done = () => { btn.textContent = "Copied"; setTimeout(() => btn.textContent = "Copy", 1500); };
+      navigator.clipboard && navigator.clipboard.writeText(text).then(done).catch(() => {
+        const r = document.createRange(); r.selectNodeContents(btn.previousElementSibling);
+        const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      });
+    });
+  });
+})();
+</script>
