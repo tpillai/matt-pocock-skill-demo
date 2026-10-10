@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class LibraryService {
     static final int LOAN_PERIOD_DAYS = 14;
@@ -45,10 +46,7 @@ public class LibraryService {
         Loan loan = findActiveLoan(isbn)
                 .orElseThrow(() -> new IllegalStateException("Book is not on loan: " + isbn));
         loan.setReturnDate(today);
-        holdsOn(isbn).stream()
-                .filter(h -> h.state() == HoldState.WAITING)
-                .findFirst()
-                .ifPresent(h -> repo.replaceHold(h, h.readyForPickup(today)));
+        firstHoldOn(isbn, Hold::isWaiting).ifPresent(h -> repo.replaceHold(h, h.readyForPickup(today)));
         return fees.lateFee(loan.getDueDate(), today);
     }
 
@@ -76,16 +74,14 @@ public class LibraryService {
                 .toList();
     }
 
-    /** The Hold queue for a Book: its Holds in the order they were placed. */
-    private List<Hold> holdsOn(String isbn) {
-        return repo.getHolds().stream()
-                .filter(h -> h.isbn().equals(isbn))
-                .toList();
+    private Optional<Hold> findReadyHold(String isbn) {
+        return firstHoldOn(isbn, Hold::isReadyForPickup);
     }
 
-    private Optional<Hold> findReadyHold(String isbn) {
-        return holdsOn(isbn).stream()
-                .filter(h -> h.state() == HoldState.READY_FOR_PICKUP)
+    /** The first Hold in the Book's Hold queue (placement order) that matches. */
+    private Optional<Hold> firstHoldOn(String isbn, Predicate<Hold> matching) {
+        return repo.getHolds().stream()
+                .filter(h -> h.isbn().equals(isbn) && matching.test(h))
                 .findFirst();
     }
 

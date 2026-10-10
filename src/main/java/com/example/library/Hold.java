@@ -9,7 +9,11 @@ import java.time.LocalDate;
 public record Hold(String isbn, String memberId, LocalDate placedOn, HoldState state, LocalDate readyOn) {
 
     /** Still in the Hold queue: Waiting or Ready for pickup. */
-    public boolean isActive() { return state == HoldState.WAITING || state == HoldState.READY_FOR_PICKUP; }
+    public boolean isActive() { return isWaiting() || isReadyForPickup(); }
+
+    public boolean isWaiting() { return state == HoldState.WAITING; }
+
+    public boolean isReadyForPickup() { return state == HoldState.READY_FOR_PICKUP; }
 
     Hold readyForPickup(LocalDate today) { return new Hold(isbn, memberId, placedOn, HoldState.READY_FOR_PICKUP, today); }
 

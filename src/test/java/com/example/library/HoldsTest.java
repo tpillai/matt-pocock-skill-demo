@@ -182,4 +182,17 @@ class HoldsTest {
 
         assertEquals(new FeeCalculator().lateFee(loan.getDueDate(), returnDate), fee);
     }
+
+    @Test
+    void bookGoesBackOnTheShelfWhenReturnedWithNoOneWaiting() {
+        library.checkout("b1", "m1", TODAY);
+        library.placeHold("b1", "m2", TODAY);
+        library.returnBook("b1", TODAY.plusDays(5));
+        library.checkout("b1", "m2", TODAY.plusDays(5));
+
+        library.returnBook("b1", TODAY.plusDays(8));
+
+        assertDoesNotThrow(() -> library.checkout("b1", "m3", TODAY.plusDays(8)));
+        assertEquals(HoldState.FULFILLED, library.holdsOf("m2").get(0).state());
+    }
 }
