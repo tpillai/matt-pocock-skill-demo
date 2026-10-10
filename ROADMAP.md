@@ -112,7 +112,7 @@ Exit check: `mvn -q test` is green, the new tests read like the spec.
 
 ## The exercises planted in this project
 
-Run `mvn -q compile exec:java` to see all three in the scenario output.
+`mvn -q compile exec:java` used to show all three in the scenario output. Now that A, B and C are done, it shows Ravi placing a Hold, a free due-date return, and Ravi collecting the Book.
 
 ### Exercise A: missing feature (Phase 1-2)
 Ravi can't borrow a book Asha has, and there is no way to queue. Build **holds**:
