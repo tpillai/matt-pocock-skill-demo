@@ -22,4 +22,15 @@ public class LoanRepository {
     public void saveMember(Member member) { members.put(member.id(), member); }
     public void saveLoan(Loan loan) { loans.add(loan); }
     public void saveHold(Hold hold) { holds.add(hold); }
+
+    /** Replaces a Hold in place, keeping its position in the Hold queue. */
+    public void replaceHold(Hold existing, Hold updated) {
+        for (int i = 0; i < holds.size(); i++) {
+            if (holds.get(i) == existing) {
+                holds.set(i, updated);
+                return;
+            }
+        }
+        throw new IllegalArgumentException("Unknown hold: " + existing);
+    }
 }

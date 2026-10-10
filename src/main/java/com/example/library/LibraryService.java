@@ -24,6 +24,10 @@ public class LibraryService {
         if (findActiveLoan(isbn).isPresent()) {
             throw new IllegalStateException("Book already on loan: " + isbn);
         }
+        Optional<Hold> ready = findReadyHold(isbn);
+        if (ready.isPresent() && !ready.get().memberId().equals(memberId)) {
+            throw new IllegalStateException("Book is held for another member: " + isbn);
+        }
         long active = repo.getLoans().stream()
                 .filter(l -> l.getMemberId().equals(memberId) && l.isActive())
                 .count();
@@ -32,6 +36,7 @@ public class LibraryService {
         }
         Loan loan = new Loan(isbn, memberId, today, today.plusDays(LOAN_PERIOD_DAYS));
         repo.saveLoan(loan);
+        ready.ifPresent(h -> repo.replaceHold(h, h.fulfilled()));
         return loan;
     }
 
@@ -40,20 +45,26 @@ public class LibraryService {
         Loan loan = findActiveLoan(isbn)
                 .orElseThrow(() -> new IllegalStateException("Book is not on loan: " + isbn));
         loan.setReturnDate(today);
+        holdsOn(isbn).stream()
+                .filter(h -> h.state() == HoldState.WAITING)
+                .findFirst()
+                .ifPresent(h -> repo.replaceHold(h, h.readyForPickup(today)));
         return fees.lateFee(loan.getDueDate(), today);
     }
 
     public Hold placeHold(String isbn, String memberId, LocalDate today) {
         requireKnown(isbn, memberId);
-        Loan loan = findActiveLoan(isbn).orElseThrow(
-                () -> new IllegalStateException("Book is on the shelf, borrow it instead: " + isbn));
-        if (loan.getMemberId().equals(memberId)) {
+        Optional<Loan> loan = findActiveLoan(isbn);
+        if (loan.isEmpty() && findReadyHold(isbn).isEmpty()) {
+            throw new IllegalStateException("Book is on the shelf, borrow it instead: " + isbn);
+        }
+        if (loan.isPresent() && loan.get().getMemberId().equals(memberId)) {
             throw new IllegalStateException("Member already has this book on loan: " + isbn);
         }
         if (holdsOf(memberId).stream().anyMatch(h -> h.isActive() && h.isbn().equals(isbn))) {
             throw new IllegalStateException("Member already holds this book: " + isbn);
         }
-        Hold hold = new Hold(isbn, memberId, today, HoldState.WAITING);
+        Hold hold = new Hold(isbn, memberId, today, HoldState.WAITING, null);
         repo.saveHold(hold);
         return hold;
     }
@@ -63,6 +74,19 @@ public class LibraryService {
         return repo.getHolds().stream()
                 .filter(h -> h.memberId().equals(memberId))
                 .toList();
+    }
+
+    /** The Hold queue for a Book: its Holds in the order they were placed. */
+    private List<Hold> holdsOn(String isbn) {
+        return repo.getHolds().stream()
+                .filter(h -> h.isbn().equals(isbn))
+                .toList();
+    }
+
+    private Optional<Hold> findReadyHold(String isbn) {
+        return holdsOn(isbn).stream()
+                .filter(h -> h.state() == HoldState.READY_FOR_PICKUP)
+                .findFirst();
     }
 
     private void requireKnown(String isbn, String memberId) {
