@@ -22,10 +22,10 @@ throwaway design question. Not sure which? Ask `/ask-matt`.
 
 | Phase | Status |
 |---|---|
-| 0 Setup | **Done.** mattpocock-skills 1.3.1 from Matt's marketplace, local-markdown tracker, pre-commit hook runs `mvn -q test`. |
+| 0 Setup | **Done.** mattpocock-skills 1.3.1 from Matt's marketplace, local-markdown tracker, pre-commit hook runs `mvn -q test`. Pushed to a public GitHub repo (`tpillai/matt-pocock-skill-demo`); the tracker is still local markdown. |
 | 1 Alignment | **Exercise A grilled.** `/grill-with-docs` produced `GLOSSARY.md` and ADR 0001. `/grill-me`, `/wait-what` and reading `/codebase-design` aren't recorded in the repo. |
 | 2 Build | **Done.** Holds spec and tickets 01-05 implemented with `/implement`, `/tdd` and `/code-review`; spec and tickets closed. Two `/retro`s. |
-| 3 Bugs and architecture | **In progress.** Exercise C done: `/improve-codebase-architecture` proposed three deepenings, and candidate 1 (seal the store: `LibraryStore` answers questions, `Loan` is a record) was grilled and shipped as `.scratch/seal-the-store/` ticket 01. Candidate 2 (a Hold queue module) is left for a later run. `/diagnosing-bugs` was used once on a real Holds bug (the Holds query reported Expired Holds as Ready for pickup), so Exercise B is still open, as is `/prototype`. |
+| 3 Bugs and architecture | **In progress.** Exercises B and C done. Exercise B: given only the symptom, `/diagnosing-bugs` built a red test first (`returnOnDueDateIsFree`, fee charged: 0.25), then found an off-by-one in `FeeCalculator.lateFee` (`+ 1` on the day count) that also overcharged every late return by a day; fixed with two regression tests in `LibraryServiceTest`. Exercise C: `/improve-codebase-architecture` proposed three deepenings, and candidate 1 (seal the store: `LibraryStore` answers questions, `Loan` is a record) was grilled and shipped as `.scratch/seal-the-store/` ticket 01. Candidate 2 (a Hold queue module) is left for a later run. `/prototype` is still open. |
 | 4 Working style | Not started. |
 
 What the retros added: a pre-commit hook, `LibraryServiceContractTest` (every
@@ -33,7 +33,7 @@ operation takes `today`), rules for closing tickets and specs in
 `docs/agents/issue-tracker.md`, ADR 0002 (lazy expiry), `CODING_STANDARDS.md`,
 and the Holds tests split into one class per behaviour.
 
-Next step: Exercise B. `/clear`, then give `/diagnosing-bugs` only the symptom.
+Next step: `/prototype` on a design question to close Phase 3, then Phase 4.
 
 ## Phase 0: Install and set up (30 minutes)
 
@@ -128,6 +128,9 @@ toward the 3-loan limit?). Don't answer them in advance.
 The scenario prints `Fee charged: $0.25` for a book returned **on** its due
 date. The tests are green because `lateReturnChargesAFee` only asserts the fee
 is positive. Tell `/diagnosing-bugs` the symptom only, not where it is.
+
+**Done.** The cause was `+ 1` in `FeeCalculator.lateFee`, which counted the due
+date as a late day. The scenario now prints `Fee charged: $0`.
 
 ### Exercise C: shallow, leaky design (Phase 3)
 `LoanRepository` hands out its raw maps and list, `Loan` has public setters,

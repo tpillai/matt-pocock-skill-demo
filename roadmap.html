@@ -211,7 +211,7 @@ footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--li
           <div class="meta">BUGS AND DESIGN · WEEK 3</div>
           <h3>Debug with discipline, then deepen the design</h3>
           <ul class="steps">
-            <li><label><input type="checkbox" id="s3a"><span><strong>Exercise B</strong>: give <code>/diagnosing-bugs</code> only the symptom.</span></label></li>
+            <li><label><input type="checkbox" id="s3a" checked><span><strong>Exercise B</strong>: give <code>/diagnosing-bugs</code> only the symptom.</span></label></li>
             <li><label><input type="checkbox" id="s3b" checked><span><strong>Exercise C</strong>: run <code>/improve-codebase-architecture</code> and pick one option.</span></label></li>
             <li><label><input type="checkbox" id="s3c"><span><code>/prototype</code> a design question, like "should holds expire?"</span></label></li>
           </ul>
@@ -241,14 +241,14 @@ footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--li
     <div class="eyebrow">Progress · updated 10 October 2026</div>
     <h2>Where things stand</h2>
     <ul class="status">
-      <li class="is-done"><b>0 Setup</b><span><strong>Done.</strong> mattpocock-skills 1.3.1 from Matt's marketplace, local-markdown tracker, pre-commit hook runs <code>mvn -q test</code>.</span></li>
+      <li class="is-done"><b>0 Setup</b><span><strong>Done.</strong> mattpocock-skills 1.3.1 from Matt's marketplace, local-markdown tracker, pre-commit hook runs <code>mvn -q test</code>. Pushed to a public GitHub repo (<code>tpillai/matt-pocock-skill-demo</code>); the tracker is still local markdown.</span></li>
       <li class="is-done"><b>1 Alignment</b><span><strong>Exercise A grilled.</strong> <code>/grill-with-docs</code> produced <code>GLOSSARY.md</code> and ADR 0001. <code>/grill-me</code>, <code>/wait-what</code> and reading <code>/codebase-design</code> aren't recorded in the repo.</span></li>
       <li class="is-done"><b>2 Build</b><span><strong>Done.</strong> Holds spec and tickets 01–05 implemented with <code>/implement</code>, <code>/tdd</code> and <code>/code-review</code>; spec and tickets closed. Two <code>/retro</code>s.</span></li>
-      <li class="is-next"><b>3 Bugs</b><span><strong>In progress.</strong> Exercise C done: <code>/improve-codebase-architecture</code> proposed three deepenings, and candidate 1 (seal the store: <code>LibraryStore</code> answers questions, <code>Loan</code> is a record) was grilled and shipped as <code>.scratch/seal-the-store/</code> ticket 01. Candidate 2 (a Hold queue module) is left for a later run. <code>/diagnosing-bugs</code> was used once on a real Holds bug (the Holds query reported Expired Holds as Ready for pickup), so Exercise B is still open, as is <code>/prototype</code>.</span></li>
+      <li class="is-next"><b>3 Bugs</b><span><strong>In progress.</strong> Exercises B and C done. Exercise B: given only the symptom, <code>/diagnosing-bugs</code> built a red test first (<code>returnOnDueDateIsFree</code>, fee charged: 0.25), then found an off-by-one in <code>FeeCalculator.lateFee</code> (<code>+ 1</code> on the day count) that also overcharged every late return by a day; fixed with two regression tests in <code>LibraryServiceTest</code>. Exercise C: <code>/improve-codebase-architecture</code> proposed three deepenings, and candidate 1 (seal the store: <code>LibraryStore</code> answers questions, <code>Loan</code> is a record) was grilled and shipped as <code>.scratch/seal-the-store/</code> ticket 01. Candidate 2 (a Hold queue module) is left for a later run. <code>/prototype</code> is still open.</span></li>
       <li><b>4 Style</b><span>Not started.</span></li>
     </ul>
     <p>What the retros added: a pre-commit hook, <code>LibraryServiceContractTest</code> (every operation takes <code>today</code>), rules for closing tickets and specs in <code>docs/agents/issue-tracker.md</code>, ADR 0002 (lazy expiry), <code>CODING_STANDARDS.md</code>, and the Holds tests split into one class per behaviour.</p>
-    <p><strong>Next step:</strong> Exercise B. <kbd>/clear</kbd>, then give <code>/diagnosing-bugs</code> only the symptom.</p>
+    <p><strong>Next step:</strong> <code>/prototype</code> on a design question to close Phase 3, then Phase 4.</p>
   </section>
 
   <section>
@@ -271,7 +271,7 @@ footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--li
         <div class="tag">Exercise B · Phase 3</div>
         <h3>Seeded bug: due-date fee</h3>
         <p>Returning on the due date costs $0.25. Tests pass because one only checks the fee is positive. Don't say where the bug is.</p>
-        <div class="stamp">OVERDUE?</div>
+        <div class="stamp">BUG · FIXED</div>
       </div>
       <div class="slip">
         <div class="tag">Exercise C · Phase 3</div>
