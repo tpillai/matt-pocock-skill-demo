@@ -1,6 +1,6 @@
 # Spec: Holds on books that are out
 
-Status: ready-for-agent
+Status: done
 
 ## Problem Statement
 
