@@ -33,7 +33,7 @@ The state of the first Hold in the queue once its Book is returned: the Book is 
 _Avoid_: Reserved, on the hold shelf
 
 **Pickup window**:
-The days a Hold stays Ready for pickup, starting on the day its Book is returned.
+The days a Hold stays Ready for pickup, starting on the day its Book is returned, or on the day the Hold ahead of it Expired or was Cancelled.
 _Avoid_: Grace period, collection period
 
 ### How a Hold ends

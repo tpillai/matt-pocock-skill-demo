@@ -9,7 +9,6 @@ import java.util.function.Predicate;
 public class LibraryService {
     static final int LOAN_PERIOD_DAYS = 14;
     static final int MAX_ACTIVE_LOANS = 3;
-    static final int PICKUP_WINDOW_DAYS = 3;
 
     private final LoanRepository repo;
     private final FeeCalculator fees;
@@ -23,7 +22,7 @@ public class LibraryService {
 
     public Loan checkout(String isbn, String memberId, LocalDate today) {
         requireKnown(isbn, memberId);
-        expireLapsedHolds(isbn, today);
+        expireHoldsPastPickupWindow(isbn, today);
         if (findActiveLoan(isbn).isPresent()) {
             throw new IllegalStateException("Book already on loan: " + isbn);
         }
@@ -48,13 +47,13 @@ public class LibraryService {
         Loan loan = findActiveLoan(isbn)
                 .orElseThrow(() -> new IllegalStateException("Book is not on loan: " + isbn));
         loan.setReturnDate(today);
-        firstHoldOn(isbn, Hold::isWaiting).ifPresent(h -> repo.replaceHold(h, h.readyForPickup(today)));
+        handToNextWaitingHold(isbn, today);
         return fees.lateFee(loan.getDueDate(), today);
     }
 
     public Hold placeHold(String isbn, String memberId, LocalDate today) {
         requireKnown(isbn, memberId);
-        expireLapsedHolds(isbn, today);
+        expireHoldsPastPickupWindow(isbn, today);
         Optional<Loan> loan = findActiveLoan(isbn);
         if (loan.isEmpty() && findReadyHold(isbn).isEmpty()) {
             throw new IllegalStateException("Book is on the shelf, borrow it instead: " + isbn);
@@ -79,22 +78,22 @@ public class LibraryService {
 
     /**
      * Expires each Ready-for-pickup Hold whose Pickup window ended before today and hands the Book
-     * to the next Waiting Hold. Each new window starts the day after the previous one ended, so
-     * several lapsed windows advance the queue in turn.
+     * to the next Waiting Hold. Each new window starts on the day the previous Hold Expired, so when
+     * several windows have passed the queue advances through each in turn.
      */
-    private void expireLapsedHolds(String isbn, LocalDate today) {
+    private void expireHoldsPastPickupWindow(String isbn, LocalDate today) {
         Optional<Hold> ready = findReadyHold(isbn);
-        while (ready.isPresent()) {
+        while (ready.isPresent() && today.isAfter(ready.get().lastPickupDay())) {
             Hold hold = ready.get();
-            LocalDate lastPickupDay = hold.readyOn().plusDays(PICKUP_WINDOW_DAYS);
-            if (!today.isAfter(lastPickupDay)) {
-                return;
-            }
             repo.replaceHold(hold, hold.expired());
-            LocalDate expiredOn = lastPickupDay.plusDays(1);
-            firstHoldOn(isbn, Hold::isWaiting).ifPresent(h -> repo.replaceHold(h, h.readyForPickup(expiredOn)));
+            handToNextWaitingHold(isbn, hold.lastPickupDay().plusDays(1));
             ready = findReadyHold(isbn);
         }
+    }
+
+    /** Sets the Book aside for the first Waiting Hold, if any; otherwise it is on the shelf. */
+    private void handToNextWaitingHold(String isbn, LocalDate readyOn) {
+        firstHoldOn(isbn, Hold::isWaiting).ifPresent(h -> repo.replaceHold(h, h.readyForPickup(readyOn)));
     }
 
     private Optional<Hold> findReadyHold(String isbn) {

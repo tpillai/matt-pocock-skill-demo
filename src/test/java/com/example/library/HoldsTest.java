@@ -241,7 +241,7 @@ class HoldsTest {
     }
 
     @Test
-    void queueAdvancesThroughEverySeveralPickupWindowsThatHavePassed() {
+    void queueAdvancesThroughSeveralPassedPickupWindows() {
         library.checkout("b1", "m1", TODAY);
         library.placeHold("b1", "m2", TODAY);
         library.placeHold("b1", "m3", TODAY);
