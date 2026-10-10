@@ -6,7 +6,7 @@ Java 21 + Maven + JUnit 5. No frameworks, all in-memory.
 - Run the scripted scenario: `mvn -q compile exec:java`
 - Code: `src/main/java/com/example/library/`, tests: `src/test/java/com/example/library/`
 
-This repo is a sandbox for learning Matt Pocock's skills. See `ROADMAP.md`.
+This repo is a sandbox for learning Matt Pocock's skills. See `ROADMAP.md` (the source of truth; `roadmap.html` is a visual copy, so keep the two in sync).
 
 ## Agent skills
 
