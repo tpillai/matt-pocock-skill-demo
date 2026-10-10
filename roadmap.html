@@ -212,7 +212,7 @@ footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--li
           <h3>Debug with discipline, then deepen the design</h3>
           <ul class="steps">
             <li><label><input type="checkbox" id="s3a"><span><strong>Exercise B</strong>: give <code>/diagnosing-bugs</code> only the symptom.</span></label></li>
-            <li><label><input type="checkbox" id="s3b"><span><strong>Exercise C</strong>: run <code>/improve-codebase-architecture</code> and pick one option.</span></label></li>
+            <li><label><input type="checkbox" id="s3b" checked><span><strong>Exercise C</strong>: run <code>/improve-codebase-architecture</code> and pick one option.</span></label></li>
             <li><label><input type="checkbox" id="s3c"><span><code>/prototype</code> a design question, like "should holds expire?"</span></label></li>
           </ul>
         </div>
@@ -244,7 +244,7 @@ footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--li
       <li class="is-done"><b>0 Setup</b><span><strong>Done.</strong> mattpocock-skills 1.3.1 from Matt's marketplace, local-markdown tracker, pre-commit hook runs <code>mvn -q test</code>.</span></li>
       <li class="is-done"><b>1 Alignment</b><span><strong>Exercise A grilled.</strong> <code>/grill-with-docs</code> produced <code>GLOSSARY.md</code> and ADR 0001. <code>/grill-me</code>, <code>/wait-what</code> and reading <code>/codebase-design</code> aren't recorded in the repo.</span></li>
       <li class="is-done"><b>2 Build</b><span><strong>Done.</strong> Holds spec and tickets 01–05 implemented with <code>/implement</code>, <code>/tdd</code> and <code>/code-review</code>; spec and tickets closed. Two <code>/retro</code>s.</span></li>
-      <li class="is-next"><b>3 Bugs</b><span><strong>Next.</strong> <code>/diagnosing-bugs</code> was used once on a real Holds bug (the Holds query reported Expired Holds as Ready for pickup), so Exercise B is still open, as are Exercise C and <code>/prototype</code>.</span></li>
+      <li class="is-next"><b>3 Bugs</b><span><strong>In progress.</strong> Exercise C done: <code>/improve-codebase-architecture</code> proposed three deepenings, and candidate 1 (seal the store: <code>LibraryStore</code> answers questions, <code>Loan</code> is a record) was grilled and shipped as <code>.scratch/seal-the-store/</code> ticket 01. Candidate 2 (a Hold queue module) is left for a later run. <code>/diagnosing-bugs</code> was used once on a real Holds bug (the Holds query reported Expired Holds as Ready for pickup), so Exercise B is still open, as is <code>/prototype</code>.</span></li>
       <li><b>4 Style</b><span>Not started.</span></li>
     </ul>
     <p>What the retros added: a pre-commit hook, <code>LibraryServiceContractTest</code> (every operation takes <code>today</code>), rules for closing tickets and specs in <code>docs/agents/issue-tracker.md</code>, ADR 0002 (lazy expiry), <code>CODING_STANDARDS.md</code>, and the Holds tests split into one class per behaviour.</p>

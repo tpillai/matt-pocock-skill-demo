@@ -25,7 +25,7 @@ throwaway design question. Not sure which? Ask `/ask-matt`.
 | 0 Setup | **Done.** mattpocock-skills 1.3.1 from Matt's marketplace, local-markdown tracker, pre-commit hook runs `mvn -q test`. |
 | 1 Alignment | **Exercise A grilled.** `/grill-with-docs` produced `GLOSSARY.md` and ADR 0001. `/grill-me`, `/wait-what` and reading `/codebase-design` aren't recorded in the repo. |
 | 2 Build | **Done.** Holds spec and tickets 01-05 implemented with `/implement`, `/tdd` and `/code-review`; spec and tickets closed. Two `/retro`s. |
-| 3 Bugs and architecture | **Next.** `/diagnosing-bugs` was used once on a real Holds bug (the Holds query reported Expired Holds as Ready for pickup), so Exercise B is still open, as are Exercise C and `/prototype`. |
+| 3 Bugs and architecture | **In progress.** Exercise C done: `/improve-codebase-architecture` proposed three deepenings, and candidate 1 (seal the store: `LibraryStore` answers questions, `Loan` is a record) was grilled and shipped as `.scratch/seal-the-store/` ticket 01. Candidate 2 (a Hold queue module) is left for a later run. `/diagnosing-bugs` was used once on a real Holds bug (the Holds query reported Expired Holds as Ready for pickup), so Exercise B is still open, as is `/prototype`. |
 | 4 Working style | Not started. |
 
 What the retros added: a pre-commit hook, `LibraryServiceContractTest` (every
