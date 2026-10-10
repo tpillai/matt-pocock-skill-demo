@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 public class LibraryService {
     static final int LOAN_PERIOD_DAYS = 14;
     static final int MAX_ACTIVE_LOANS = 3;
+    static final int MAX_ACTIVE_HOLDS = 3;
 
     private final LoanRepository repo;
     private final FeeCalculator fees;
@@ -64,6 +65,9 @@ public class LibraryService {
         if (findActiveHold(isbn, memberId).isPresent()) {
             throw new IllegalStateException("Member already holds this book: " + isbn);
         }
+        if (activeHoldCount(memberId, today) >= MAX_ACTIVE_HOLDS) {
+            throw new IllegalStateException("Member has too many holds: " + memberId);
+        }
         Hold hold = new Hold(isbn, memberId, today, HoldState.WAITING, null);
         repo.saveHold(hold);
         return hold;
@@ -90,6 +94,11 @@ public class LibraryService {
                 .distinct()
                 .forEach(isbn -> expireHoldsPastPickupWindow(isbn, today));
         return holdsPlacedBy(memberId);
+    }
+
+    /** Waiting and Ready-for-pickup Holds, after Expiring any on the Member's other Books whose window has passed. */
+    private long activeHoldCount(String memberId, LocalDate today) {
+        return holdsOf(memberId, today).stream().filter(Hold::isActive).count();
     }
 
     private List<Hold> holdsPlacedBy(String memberId) {
