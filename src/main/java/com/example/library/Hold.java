@@ -3,7 +3,7 @@ package com.example.library;
 import java.time.LocalDate;
 
 /**
- * A Member's claim to a Book that is not on the shelf. See CONTEXT.md.
+ * A Member's claim to a Book that is not on the shelf. See GLOSSARY.md.
  * {@code readyOn} is the day the Pickup window started, or null while Waiting.
  */
 public record Hold(String isbn, String memberId, LocalDate placedOn, HoldState state, LocalDate readyOn) {

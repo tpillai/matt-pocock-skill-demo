@@ -122,7 +122,7 @@ footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--li
     <h2>How a feature moves through the skills</h2>
     <div class="flow-box">
       <div class="flow">
-        <div class="node"><b>/grill-with-docs</b><span>Agent interviews you until the plan has no open branches. Writes CONTEXT.md and ADRs.</span></div>
+        <div class="node"><b>/grill-with-docs</b><span>Agent interviews you until the plan has no open branches. Writes GLOSSARY.md and ADRs.</span></div>
         <div class="arrow">→</div>
         <div class="node"><b>/to-spec</b><span>Turns the conversation into a spec on your tracker.</span></div>
         <div class="arrow">→</div>
@@ -156,13 +156,13 @@ footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--li
           <h3>Install and configure</h3>
           <ul class="steps">
             <li><label><input type="checkbox" id="s0a"><span>Install the plugin, one way only, or you get every skill twice.</span></label></li>
-            <li><label><input type="checkbox" id="s0b"><span>Make the folder a git repo with a baseline commit. <code>/code-review</code> and <code>/pr</code> work on diffs, so they need one.</span></label></li>
+            <li><label><input type="checkbox" id="s0b"><span>Make the folder a git repo with a baseline commit. <code>/code-review</code> and <code>/pr</code> work on diffs, so they need one. The hooks path turns on the pre-commit test run.</span></label></li>
             <li><label><input type="checkbox" id="s0c"><span>Start <code>claude</code> in the project folder and run <code>/setup-matt-pocock-skills</code>. Pick <strong>Local markdown</strong> tracker, default labels, single-context docs.</span></label></li>
             <li><label><input type="checkbox" id="s0d"><span>Read what it wrote in <code>docs/agents/</code> and the new block in <code>CLAUDE.md</code>.</span></label></li>
             <li><label><input type="checkbox" id="s0e"><span>Type <kbd>/</kbd> and check for duplicate names: Claude Code has its own <code>/code-review</code>, and other plugins (e.g. <code>agent-skills</code>) have <code>/spec</code>, <code>/test</code>, <code>/review</code>. Use the namespaced form, e.g. <code>/mattpocock-skills:code-review</code>, if ambiguous.</span></label></li>
           </ul>
-          <div class="cmd"><code>claude plugin install mattpocock-skills@claude-plugins-official</code><button type="button" data-copy>Copy</button></div>
-          <div class="cmd"><code>git init &amp;&amp; git add -A &amp;&amp; git commit -m "Baseline library lending project"</code><button type="button" data-copy>Copy</button></div>
+          <div class="cmd"><code>claude plugin marketplace add mattpocock/skills &amp;&amp; claude plugin install mattpocock-skills@mattpocock</code><button type="button" data-copy>Copy</button></div>
+          <div class="cmd"><code>git init &amp;&amp; git add -A &amp;&amp; git commit -m "Baseline library lending project" &amp;&amp; git config core.hooksPath .githooks</code><button type="button" data-copy>Copy</button></div>
         </div>
       </div>
 
@@ -174,11 +174,11 @@ footer { font-size: 0.85rem; color: var(--muted); border-top: 1px solid var(--li
           <p class="goal">Most bugs start as misunderstandings. The grilling skills fix that first.</p>
           <ul class="steps">
             <li><label><input type="checkbox" id="s1b"><span>Warm up with <code>/grill-me</code> outside the repo: "grill me on how I'd plan a library app". Stateless.</span></label></li>
-            <li><label><input type="checkbox" id="s1c"><span>Start <strong>Exercise A</strong> with <code>/grill-with-docs</code> and watch <code>CONTEXT.md</code> and ADRs appear.</span></label></li>
+            <li><label><input type="checkbox" id="s1c"><span>Start <strong>Exercise A</strong> with <code>/grill-with-docs</code> and watch <code>GLOSSARY.md</code> and ADRs appear.</span></label></li>
             <li><label><input type="checkbox" id="s1d"><span>Use <code>/wait-what</code> whenever an answer doesn't land.</span></label></li>
             <li><label><input type="checkbox" id="s1a"><span>Read <code>/codebase-design</code> for the vocabulary: module, interface, depth, seam.</span></label></li>
           </ul>
-          <div class="exit"><strong>Exit check</strong>You can explain the difference between a Loan, a Hold and a Reservation in this domain, and the answers are written in <code>CONTEXT.md</code>.</div>
+          <div class="exit"><strong>Exit check</strong>You can explain the difference between a Loan, a Hold and a Reservation in this domain, and the answers are written in <code>GLOSSARY.md</code>.</div>
         </div>
       </div>
 

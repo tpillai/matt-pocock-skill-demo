@@ -1,0 +1,4 @@
+#!/bin/sh
+# Blocks the commit unless the build and test suite pass. Enable once per clone:
+#   git config core.hooksPath .githooks
+exec mvn -q test

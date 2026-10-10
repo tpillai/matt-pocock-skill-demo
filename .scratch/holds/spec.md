@@ -68,5 +68,5 @@ Members can place a Hold on a Book that is not on the shelf. Holds on the same B
 
 ## Further Notes
 
-- The glossary in `CONTEXT.md` defines Book, Member, Loan, Hold, Hold queue, Ready for pickup, Pickup window, Fulfilled, Cancelled and Expired. Use those terms in code and test names.
+- The glossary in `GLOSSARY.md` defines Book, Member, Loan, Hold, Hold queue, Ready for pickup, Pickup window, Fulfilled, Cancelled and Expired. Use those terms in code and test names.
 - "Reservation" is deliberately not a term; it's listed under _Avoid_ for Hold.

@@ -22,19 +22,23 @@ throwaway design question. Not sure which? Ask `/ask-matt`.
 
 1. Install the plugin (one way only, or you get every skill twice):
    ```bash
-   claude plugin install mattpocock-skills@claude-plugins-official
+   claude plugin marketplace add mattpocock/skills
+   claude plugin install mattpocock-skills@mattpocock
    ```
+   Install from Matt's own marketplace: `claude-plugins-official` pins an older
+   version. Update later with `claude plugin marketplace update mattpocock`.
 2. Make this folder a git repo with a baseline commit. `/code-review` and `/pr`
    work on diffs, so they need one:
    ```bash
    git init && git add -A && git commit -m "Baseline library lending project"
+   git config core.hooksPath .githooks   # pre-commit runs mvn -q test
    ```
 3. Start `claude` in this folder and run `/setup-matt-pocock-skills`.
    - **Issue tracker:** pick **Local markdown**. Tickets become files under
      `.scratch/<feature>/issues/`. No GitHub needed. Switch to GitHub later by
      re-running setup once you `gh repo create`.
    - **Triage labels:** accept the defaults.
-   - **Domain docs:** single-context (root `CONTEXT.md` + `docs/adr/`).
+   - **Domain docs:** single-context (root `GLOSSARY.md` + `docs/adr/`).
    It writes `docs/agents/*.md` and adds a block to `CLAUDE.md`. Read them.
 4. **Name collisions:** Claude Code has its own `/code-review`, and other plugins
    (e.g. `agent-skills`) have `/spec`, `/test`, `/review`. Type `/` and check
@@ -48,12 +52,12 @@ Goal: learn that most bugs are misalignment, and the cure is being interviewed.
 | Skill | Try it on this project |
 |---|---|
 | `/grill-me` | Outside the repo: "grill me on how I'd plan a library app". Stateless. |
-| `/grill-with-docs` | **Exercise A** (below). Watch `CONTEXT.md` and ADRs appear. |
+| `/grill-with-docs` | **Exercise A** (below). Watch `GLOSSARY.md` and ADRs appear. |
 | `/wait-what` | When an answer doesn't land, ask for a re-explanation. |
 | `/codebase-design` | Read it. Learn the vocabulary: module, interface, depth, seam. |
 
 Exit check: you can explain the difference between a "Loan", a "Hold" and a
-"Reservation" in this domain, and the answers are written in `CONTEXT.md`.
+"Reservation" in this domain, and the answers are written in `GLOSSARY.md`.
 
 ## Phase 2: Spec → tickets → build (week 2)
 

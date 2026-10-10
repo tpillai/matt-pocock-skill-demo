@@ -6,12 +6,12 @@ Spec: `.scratch/holds/spec.md`
 
 **Blocked by:** 01 (Place a Hold on a Book that is on Loan).
 
-**Status:** ready-for-agent
+**Status:** done
 
-- [ ] Returning a Book makes the first waiting Hold, by placement order, Ready for pickup; its Pickup window starts on the return date.
-- [ ] With three Members holding the same Book, Holds become Ready for pickup strictly in the order they were placed.
-- [ ] While a Book is Ready for pickup, any other Member who tries to borrow it is rejected with "Book is held for another member" (not "Book already on loan").
-- [ ] The Ready-for-pickup Member can borrow the Book; their Hold becomes Fulfilled and the Loan is created as normal.
-- [ ] A Member can place a Hold on a Book that is Ready for pickup for someone else and joins the back of the queue.
-- [ ] Returning a Book with no Holds leaves it on the shelf, exactly as today, and late-fee behaviour is unchanged.
-- [ ] The Holds query reports Ready for pickup and Fulfilled states.
+- [x] Returning a Book makes the first waiting Hold, by placement order, Ready for pickup; its Pickup window starts on the return date.
+- [x] With three Members holding the same Book, Holds become Ready for pickup strictly in the order they were placed.
+- [x] While a Book is Ready for pickup, any other Member who tries to borrow it is rejected with "Book is held for another member" (not "Book already on loan").
+- [x] The Ready-for-pickup Member can borrow the Book; their Hold becomes Fulfilled and the Loan is created as normal.
+- [x] A Member can place a Hold on a Book that is Ready for pickup for someone else and joins the back of the queue.
+- [x] Returning a Book with no Holds leaves it on the shelf, exactly as today, and late-fee behaviour is unchanged.
+- [x] The Holds query reports Ready for pickup and Fulfilled states.
