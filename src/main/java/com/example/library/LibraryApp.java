@@ -9,7 +9,6 @@ public class LibraryApp {
         LibraryService library = new LibraryService(store, new FeeCalculator());
 
         store.saveBook(new Book("978-0134685991", "Effective Java", "Joshua Bloch"));
-        store.saveBook(new Book("978-0132350884", "Clean Code", "Robert C. Martin"));
         store.saveMember(new Member("m-1", "Asha"));
         store.saveMember(new Member("m-2", "Ravi"));
 
